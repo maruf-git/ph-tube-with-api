@@ -20,37 +20,31 @@ function loadCategories(categories) {
 
 // loading videos data
 function loadVideos(videos) {
+    console.log("load videos:", videos, typeof videos);
+    const videoContianer = document.getElementById("video-container");
+    console.log("Video contaner: ",videoContianer);
+    videoContianer.innerText="";
     videos.forEach((video) => {
         displayVideos(video);
     })
 }
 
-// displaying videos
-// {
-//     "category_id": "1001",
-//     "video_id": "aaaa",
-//     "thumbnail": "https://i.ibb.co/L1b6xSq/shape.jpg",
-//     "title": "Shape of You",
-//     "authors": [
-//         {
-//             "profile_picture": "https://i.ibb.co/D9wWRM6/olivia.jpg",
-//             "profile_name": "Olivia Mitchell",
-//             "verified": ""
-//         }
-//     ],
-//     "others": {
-//         "views": "100K",
-//         "posted_date": "16278"
-//     },
-//     "description": "Dive into the rhythm of 'Shape of You,' a captivating track that blends pop sensibilities with vibrant beats. Created by Olivia Mitchell, this song has already gained 100K views since its release. With its infectious melody and heartfelt lyrics, 'Shape of You' is perfect for fans looking for an uplifting musical experience. Let the music take over as Olivia's vocal prowess and unique style create a memorable listening journey."
-// }
+// load categoryVideos
+
+function loadCategoryVideos(id) {
+
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+        .then(response => response.json())
+        .then(data => loadVideos(data.category));
+}
 
 function displayVideos(video) {
-    console.log(video, typeof video)
+
     const videoContianer = document.getElementById("video-container");
+    // creating video card
     const videoCard = document.createElement("div");
-    videoCard.classList = "video-car flex flex-col gap-5";
-    console.log('profile: ', video.authors[0].profile_picture)
+    videoCard.classList = "video-card flex flex-col gap-5";
+
     videoCard.innerHTML = `
         <div class="video-banner w-[300px] h-[200px] relative">
             <img src="${video.thumbnail}" alt="" class="w-full h-full object-cover">
@@ -74,12 +68,38 @@ function displayVideos(video) {
 }
 
 
+
 // displaying categories
 function displayCategories(category) {
+    // console.log("HEllo");
+    console.log("category: ", category)
     const categoriesContainer = document.getElementById('categories-container');
     // creating category button
     const categoryBtn = document.createElement('button');
     categoryBtn.innerText = category.category;
-    categoryBtn.classList = "btn font-bold"
+    categoryBtn.classList = `btn category-btns category-btn${category.category_id} font-bold`;
     categoriesContainer.appendChild(categoryBtn);
+    categoryBtn.addEventListener('click', (event) => {
+        loadCategoryVideos(category.category_id);
+        const btns = document.getElementsByClassName('category-btns');
+        
+        // remove activeBtn
+        console.log("category btns:",btns);
+        for(const btn of btns)
+        {
+            btn.classList.remove('active');
+        }
+        event.target.classList.add("active");
+        // console.log("target:",event.target);
+        // document.getElementById(`category-btn${category.category_id}`).classList.add('active');
+    })
 }
+
+
+// category-btn events
+
+// const categoryBtns = document.getElementsByClassName('category-btns');
+// console.log(categoryBtns)
+// for (const categoryBtn of categoryBtns) {
+//     console.log(categoryBtn);
+// }
