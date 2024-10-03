@@ -138,11 +138,12 @@ function displayCategories(category) {
         for (const btn of btns) {
             btn.classList.remove('active');
         }
+        // document.getElementById("most-watched").remove('active');
         event.target.classList.add("active");
 
     })
 }
-
+// Loading Searched videos
 async function loadSearchVideo(input) {
     // fetching search api
     const response = await fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${input}`);
@@ -150,7 +151,7 @@ async function loadSearchVideo(input) {
 
 
     const videoContainer = document.getElementById("video-container");
-    videoContainer.innerHTML="";
+    videoContainer.innerHTML = "";
     results.videos.forEach((video) => {
         // calling video display function
         displayVideos(video);
@@ -160,3 +161,40 @@ async function loadSearchVideo(input) {
 document.getElementById("search-input").addEventListener("keyup", (evt) => {
     loadSearchVideo(evt.target.value);
 })
+
+
+// loading most watched videos
+async function mostWatched() {
+    // fetching videos data
+    const response = await fetch('https://openapi.programming-hero.com/api/phero-tube/videos');
+    const data = await response.json();
+    // console.log("data videos", data.videos);
+    const watchCounts = [];
+    data.videos.forEach((video) => {
+        // console.log(video.others.views);
+        watchCounts.push(parseFloat(video.others.views))
+    })
+    watchCounts.sort((a, b) => b - a);
+    // console.log(watchCounts);
+    const videoContainer = document.getElementById("video-container");
+    videoContainer.innerHTML = "";
+    watchCounts.forEach((watchCount) => {
+        data.videos.forEach((video) => {
+            const count = parseFloat(video.others.views);
+            if (watchCount === count) {
+                displayVideos(video);
+            }
+        })
+    })
+
+}
+
+// adding event on most watched button
+// document.getElementById("most-watched").addEventListener("click", (evt) => {
+//     mostWatched();
+    // const btns = document.getElementsByClassName('category-btns');
+    // for (const btn of btns) {
+    //     btn.classList.remove('active');
+    // }
+    // evt.target.classList.add('active');
+// })
