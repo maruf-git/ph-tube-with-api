@@ -44,9 +44,33 @@ function loadCategoryVideos(id) {
         .then(data => loadVideos(data.category));
 }
 
+// load details
+async function loadDetails(videoId) {
+    const uri = `https://openapi.programming-hero.com/api/phero-tube/video/${videoId}`;
+    const response = await fetch(uri);
+    const detailsObject = await response.json();
+    displayDetails(detailsObject.video)
+}
+
+// display details
+function displayDetails(videoDetails) {
+    console.log(videoDetails);
+    let modalContent = document.getElementById("modal-content");
+    modalContent.innerHTML = `
+      <img src=${videoDetails.thumbnail} alt="" id="modal-img">
+      <h1 class="font-bold mt-2">Details:</h1>
+      <p id="modal-details" class="">${videoDetails.description}</p>
+      <p id="views" class="font-semibold mt-2">${videoDetails.others.views} Views</p>
+    `;
+
+    document.getElementById("detailsModal").showModal();
+}
+
+
+
 // checking verified profile
 function isVarified(str) {
-    console.log("hello")
+    // console.log("hello")
     if (str) {
         const verifiedIcon = `<img width="24" height="24" src="https://img.icons8.com/color/48/verified-badge.png" alt="verified-badge"/>`;
         return verifiedIcon;
@@ -55,7 +79,7 @@ function isVarified(str) {
 
 // displaying videos
 function displayVideos(video) {
-    console.log("Checking video", video, typeof video)
+    // console.log("Checking video", video, typeof video)
     const videoContianer = document.getElementById("video-container");
     // creating video card
     const videoCard = document.createElement("div");
@@ -68,7 +92,7 @@ function displayVideos(video) {
             </h5>
         </div>
         
-        <div class="video-content flex gap-3">
+        <div class="video-content flex items-center gap-3">
             <div class="author-img w-[50px] h-[50px] ">
                 <img src="${video.authors[0].profile_picture}" alt=" "class="w-full h-full rounded-full object-cover">
             </div>
@@ -78,10 +102,16 @@ function displayVideos(video) {
                 <h5 class="author-name ">${video.authors[0].profile_name}</h5>
                 ${isVarified(video.authors[0].verified)}
                 </div>
-                <p class="views">${video.others.views} views</p>
+    
+                 <div>
+                     <button onclick="loadDetails('${video.video_id}')" class="btn  bg-red-500 text-white">Details</button>
+                </div>
             </div>
+           
+     
         </div>
     `
+    //<p class="views">${video.others.views} views</p>
     // adding each video card to the video-container
     videoContianer.appendChild(videoCard);
 }
@@ -98,6 +128,7 @@ function displayCategories(category) {
     categoryBtn.innerText = category.category;
     categoryBtn.classList = `btn category-btns category-btn${category.category_id} font-bold`;
     categoriesContainer.appendChild(categoryBtn);
+
     // adding event on category buttons
     categoryBtn.addEventListener('click', (event) => {
         // loading and displaying category videos
