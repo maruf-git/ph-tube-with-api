@@ -20,31 +20,44 @@ function loadCategories(categories) {
 
 // loading videos data
 function loadVideos(videos) {
-    console.log("load videos:", videos, typeof videos);
-    const videoContianer = document.getElementById("video-container");
-    console.log("Video contaner: ",videoContianer);
-    videoContianer.innerText="";
-    videos.forEach((video) => {
-        displayVideos(video);
-    })
+    const videoContainer = document.getElementById("video-container");
+    // making videoContainer clear
+    videoContainer.innerText = "";
+
+    if (videos.length) {
+        videos.forEach((video) => {
+            displayVideos(video);
+        })
+    }
+    else {
+        videoContainer.innerText = "Nothing Here"
+    }
+
 }
 
 // load categoryVideos
-
 function loadCategoryVideos(id) {
-
     fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
         .then(response => response.json())
         .then(data => loadVideos(data.category));
 }
 
-function displayVideos(video) {
+// checking verified profile
+function isVarified(str) {
+    console.log("hello")
+    if (str) {
+        const verifiedIcon = `<img width="24" height="24" src="https://img.icons8.com/color/48/verified-badge.png" alt="verified-badge"/>`;
+        return verifiedIcon;
+    } else return "";
+}
 
+// displaying videos
+function displayVideos(video) {
+    console.log("Checking video", video, typeof video)
     const videoContianer = document.getElementById("video-container");
     // creating video card
     const videoCard = document.createElement("div");
     videoCard.classList = "video-card flex flex-col gap-5";
-
     videoCard.innerHTML = `
         <div class="video-banner w-[300px] h-[200px] relative">
             <img src="${video.thumbnail}" alt="" class="w-full h-full object-cover">
@@ -59,11 +72,15 @@ function displayVideos(video) {
             </div>
             <div class="video-des flex flex-col space-y-1">
                 <h1 class="video-title font-bold">${video.title}</h1>
+                <div class="flex gap-1">
                 <h5 class="author-name ">${video.authors[0].profile_name}</h5>
+                ${isVarified(video.authors[0].verified)}
+                </div>
                 <p class="views">${video.others.views} views</p>
             </div>
         </div>
     `
+    // adding each video card to the video-container
     videoContianer.appendChild(videoCard);
 }
 
@@ -79,27 +96,16 @@ function displayCategories(category) {
     categoryBtn.innerText = category.category;
     categoryBtn.classList = `btn category-btns category-btn${category.category_id} font-bold`;
     categoriesContainer.appendChild(categoryBtn);
+    // adding event on category buttons
     categoryBtn.addEventListener('click', (event) => {
+        // loading and displaying category videos
         loadCategoryVideos(category.category_id);
         const btns = document.getElementsByClassName('category-btns');
-        
-        // remove activeBtn
-        console.log("category btns:",btns);
-        for(const btn of btns)
-        {
+        // remove active class
+        for (const btn of btns) {
             btn.classList.remove('active');
         }
         event.target.classList.add("active");
-        // console.log("target:",event.target);
-        // document.getElementById(`category-btn${category.category_id}`).classList.add('active');
+
     })
 }
-
-
-// category-btn events
-
-// const categoryBtns = document.getElementsByClassName('category-btns');
-// console.log(categoryBtns)
-// for (const categoryBtn of categoryBtns) {
-//     console.log(categoryBtn);
-// }
