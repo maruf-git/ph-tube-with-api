@@ -21,16 +21,18 @@ function loadCategories(categories) {
 // loading videos data
 function loadVideos(videos) {
     const videoContainer = document.getElementById("video-container");
+    const noVideo = document.getElementById("no-video");
     // making videoContainer clear
     videoContainer.innerText = "";
 
     if (videos.length) {
+        noVideo.classList.add("hidden");
         videos.forEach((video) => {
             displayVideos(video);
         })
     }
     else {
-        videoContainer.innerText = "Nothing Here"
+        noVideo.classList.remove("hidden");
     }
 
 }
